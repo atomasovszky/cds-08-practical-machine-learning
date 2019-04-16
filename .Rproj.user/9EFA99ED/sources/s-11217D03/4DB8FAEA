@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555412704729.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "4DB8FAEA",
+    "lastKnownWriteTime" : 1555412721,
+    "last_content_update" : 1555412721873,
+    "path" : "~/Google Drive/work/data-science/MOOC/coursera-data-science/08-practical-machine-learning/scripts/week1.R",
+    "project_path" : "scripts/week1.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

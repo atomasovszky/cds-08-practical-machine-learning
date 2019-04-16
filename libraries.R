@@ -1,0 +1,6 @@
+suppressPackageStartupMessages(if(!require("data.table")) {install.packages("data.table");  require("data.table")})
+suppressPackageStartupMessages(if(!require("dplyr")) {install.packages("dplyr");  require("dplyr")})
+suppressPackageStartupMessages(if(!require("ggplot2")) {install.packages("ggplot2");  require("ggplot2")})
+suppressPackageStartupMessages(if(!require("glue")) {install.packages("glue");  require("glue")})
+suppressPackageStartupMessages(if(!require("purrr")) {install.packages("rlang");  require("purrr")})
+suppressPackageStartupMessages(if(!require("swirl")) {install.packages("swirl");  require("swirl")})
