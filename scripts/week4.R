@@ -2,6 +2,7 @@ source("global.R")
 
 # QUIZ —————————————————————————————————————————————————————————————————————————
 
+
 # problem 1
 library(ElemStatLearn)
 data(vowel.train)
@@ -64,3 +65,21 @@ predicts %>%
     .[, voted := N == max(N), .(id, truth)] %>%
     .[voted == TRUE] %>%
     .[, confusionMatrix(value, truth)]
+
+
+# problem 3
+set.seed(3523)
+library(AppliedPredictiveModeling)
+data(concrete)
+inTrain = createDataPartition(concrete$CompressiveStrength, p = 3/4)[[1]]
+training = concrete[ inTrain,]
+testing = concrete[-inTrain,]
+set.seed(233)
+
+library(elasticnet)
+lasso <- train(CompressiveStrength ~ ., data = training, method = "lasso")
+plot(lasso$finalModel)
+?plot.enet
+
+
+# problem 4
