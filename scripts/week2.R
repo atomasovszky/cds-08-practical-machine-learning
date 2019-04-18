@@ -24,7 +24,6 @@ predictions <- predict(modelFit, testing)
 
 confusionMatrix(predictions, testing$type)
 
-
 # Example - K-fold —————————————————————————————————————————————————————————————
 set.seed(32323)
 folds <- createFolds(
@@ -432,14 +431,15 @@ model1 <- train(
     method = "glm"
 )
 
-trainPCA <- preProcess(training[, pcvars], method = "pca", thresh = .8)
+PCA <- preProcess(training[, pcvars], method = "pca", thresh = .8)
+trainPCA <- predict(PCA, training[, c(pcvars, "diagnosis")])
+testPCA <- predict(PCA, testing[, c(pcvars, "diagnosis")])
 
 model2 <- train(
     form   = diagnosis ~ .,
-    data = training[, c(pcvars, "diagnosis")],
-    method = "glm",
-    preprocessing = "pca",
-    thresh = .8
+    data = trainPCA,
+    method = "glm"
 )
 
-confusionMatrix(model1, newdata = predict(trainPCA, testing[, c(pcvars, "diagnosis")]))
+confusionMatrix(testing$diagnosis, predict(model1, testing))
+confusionMatrix(testing$diagnosis, predict(model2, testPCA))

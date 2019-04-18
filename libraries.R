@@ -4,4 +4,6 @@ suppressWarnings(suppressPackageStartupMessages(if(!require("ggplot2")) {install
 suppressWarnings(suppressPackageStartupMessages(if(!require("glue")) {install.packages("glue");  require("glue")}))
 suppressWarnings(suppressPackageStartupMessages(if(!require("purrr")) {install.packages("rlang");  require("purrr")}))
 suppressWarnings(suppressPackageStartupMessages(if(!require("swirl")) {install.packages("swirl");  require("swirl")}))
-suppressWarnings(suppressPackageStartupMessages(if(!require("caret")) {install.packages("swirl");  require("swirl")}))
+suppressWarnings(suppressPackageStartupMessages(if(!require("caret")) {install.packages("caret");  require("caret")}))
+suppressWarnings(suppressPackageStartupMessages(if(!require("grid")) {install.packages("grid");  require("grid")}))
+suppressWarnings(suppressPackageStartupMessages(if(!require("gridExtra")) {install.packages("gridExtra");  require("gridExtra")}))
