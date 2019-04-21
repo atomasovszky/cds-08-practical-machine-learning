@@ -57,9 +57,18 @@ predicts <- data.table(
     gbm = predict(model_gbm, testing),
     lda = predict(model_lda, testing),
     truth = testing$diagnosis
-) %>% melt(id.vars = c("id", "truth"))
+)
+
+model_comb <- train(truth ~ rf + gbm + lda, data = predicts, method = "rf")
+predicts[, combined := predict(model_comb, predicts)]
+
+predicts[, confusionMatrix(rf, truth)]$overall[1]
+predicts[, confusionMatrix(gbm, truth)]$overall[1]
+predicts[, confusionMatrix(lda, truth)]$overall[1]
+predicts[, confusionMatrix(combined, truth)]$overall[1]
 
 predicts %>%
+    melt(id.vars = c("id", "truth")) %>%
     .[, .N, .(id, truth, value)] %>%
     .[, value := as.factor(value)] %>%
     .[, voted := N == max(N), .(id, truth)] %>%
@@ -83,3 +92,44 @@ plot(lasso$finalModel)
 
 
 # problem 4
+dat <- fread("https://d396qusza40orc.cloudfront.net/predmachlearn/gaData.csv")
+library(lubridate) # For year() function below
+training = dat[year(dat$date) < 2012,]
+testing = dat[(year(dat$date)) > 2011,]
+tstrain = ts(training$visitsTumblr)
+library(forecast)
+
+model <- bats(training$visitsTumblr)
+plot(model)
+
+model
+predict <- forecast(model, nrow(testing)) %>% as.data.table
+
+data.table(
+    predict,
+    testing
+) %>%
+    .[, .N / nrow(testing), .(visitsTumblr >= `Lo 95` & visitsTumblr <= `Hi 95`)]
+
+
+#problem 5
+set.seed(3523)
+library(AppliedPredictiveModeling)
+data(concrete)
+concrete <- data.table(concrete)
+inTrain = createDataPartition(concrete$CompressiveStrength, p = 3/4)[[1]]
+training = concrete[inTrain,]
+testing = concrete[-inTrain]
+
+set.seed(325)
+
+svm <- e1071::svm(CompressiveStrength ~ ., data = training)
+data.table(
+    prediction = predict(svm, testing),
+    truth      = testing$CompressiveStrength
+) %>%
+    .[, (prediction - truth)] %>%
+    .^2 %>%
+    sum %>%
+    sqrt %>%
+    sqrt
