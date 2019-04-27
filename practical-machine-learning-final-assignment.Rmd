@@ -1,0 +1,26 @@
+---
+title: "Practical Machine Learning Final Assignment"
+author: "atomasovszky"
+date: "4/27/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    messages = FALSE,
+    dpi = 300,
+    out.width = "350pt",
+    fig.align = "center"
+)
+
+source("libraries_final_assignment.R")
+
+train <- fread("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv")
+test  <- fread("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv")
+```
+
+&nbsp;
+&nbsp;
+
+
