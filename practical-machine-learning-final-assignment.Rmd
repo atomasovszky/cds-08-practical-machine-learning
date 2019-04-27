@@ -8,9 +8,7 @@ output: html_document
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-    echo = FALSE, 
     messages = FALSE,
-    warnings = FALSE,
     dpi = 300,
     out.width = "600pt",
     fig.align = "center"
