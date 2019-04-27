@@ -74,8 +74,16 @@ walk(setdiff(names(train_clean), "classe"), ~{
     }
 })
 
+train_clean %>%
+    .[, .(magnet_dumbbell_y, gyros_dumbbell_x, gyros_forearm_x, classe)] %>%
+    melt(id.vars = "classe")  %>%
+    ggplot(aes(classe, value, fill = classe)) +
+        geom_boxplot(alpha = .75) +
+        facet_wrap(~variable, nrow = 1, scales = "free_y") +
+        labs(y = "")
+
 ggplot(train_clean, aes(classe, magnet_dumbbell_y, fill = classe)) +
-    geom_boxplot(alpha = .75)
+    
 
 ggplot(train_clean, aes(classe, gyros_dumbbell_x, fill = classe)) +
     geom_boxplot(alpha = .75)
