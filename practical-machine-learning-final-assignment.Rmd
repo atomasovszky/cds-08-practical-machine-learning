@@ -1,11 +1,12 @@
 ---
-title: "Practical Machine Learning Final Assignment"
+title: "Human Activity Recognition - Predicting how well weight lifting excercises were performed using sensory data"
+subtitle: "Practical Machine Learning Final Assignment"
 author: "atomasovszky"
 date: "4/27/2019"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
     echo = FALSE, 
     messages = FALSE,
@@ -20,7 +21,65 @@ train <- fread("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training
 test  <- fread("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv")
 ```
 
+
+## Synopsis
+
+The goal of this work is to use on-body sensor data to predict whether a particular excercise is performed correctly.
+The 6 participants of the study our data is coming from were equippped with movement sensors on their arm, forearm, a belt sensor on their waist and one on their dumbell, and they've been asked to perform weight lifting in a proper way (classe = A), and with some common mistakes (classe = {B, C, D, E}).
+
+
 &nbsp;
 &nbsp;
 
+
+## Feature selection
+
+Besides the obvious ones (ids, timestamps, etc.) we also left summary variables out as they have missing values for most of the records.
+
+```{r feature_selection}
+summary_vars <- grep(
+    pattern = "^kurtosis|^skewness|^max|^min|^amplitude|^var|^avg|^stddev", 
+    x       = names(train),
+    value   = TRUE
+)
+
+variables_to_omit <- c(
+    summary_vars,
+    grep("window|V1|user|timestamp", names(train), value = TRUE)
+)
+
+# train[, (variables_to_omit) := NULL]
+```
+
+
+&nbsp;
+&nbsp;
+
+
+## Checking the distribution of features
+
+The three boxplots included here shows that there are a few outliers in the dataset.
+These come from two cases, id 5373, and 9274. 
+We omitted these during the training.
+
+```{r feature distribution check}
+walk(setdiff(names(train), "classe"), ~{
+    ggplot(train, aes_string("classe", .x, fill = "classe")) +
+        geom_boxplot(alpha = .75)
+    ggsave(glue("figures/{.x}.png"))
+})
+
+ggplot(train, aes(classe, magnet_dumbbell_y, fill = classe)) +
+    geom_boxplot(alpha = .75)
+
+ggplot(train, aes(classe, gyros_dumbbell_x, fill = classe)) +
+    geom_boxplot(alpha = .75)
+
+ggplot(train, aes(classe, gyros_forearm_x, fill = classe)) +
+    geom_boxplot(alpha = .75)
+
+outliers <- train[magnet_dumbbell_y < -2000 | gyros_forearm_x < -20][, V1]
+outliers
+train <- train[!outliers]
+```
 
