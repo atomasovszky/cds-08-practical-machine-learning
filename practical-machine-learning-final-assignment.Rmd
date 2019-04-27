@@ -17,8 +17,10 @@ knitr::opts_chunk$set(
 
 source("libraries_final_assignment.R")
 
-train <- fread("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv")
-test  <- fread("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv")
+train_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+test_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+train <- fread(train_url)
+test  <- fread(test_url)
 ```
 
 
@@ -48,7 +50,7 @@ variables_to_omit <- c(
     grep("window|V1|user|timestamp", names(train), value = TRUE)
 )
 
-# train[, (variables_to_omit) := NULL]
+train_clean <- train[, .SD, .SDcols = setdiff(names(train), variables_to_omit)]
 ```
 
 
@@ -62,24 +64,26 @@ The three boxplots included here shows that there are a few outliers in the data
 These come from two cases, id 5373, and 9274. 
 We omitted these during the training.
 
-```{r feature distribution check}
-walk(setdiff(names(train), "classe"), ~{
-    ggplot(train, aes_string("classe", .x, fill = "classe")) +
-        geom_boxplot(alpha = .75)
-    ggsave(glue("figures/{.x}.png"))
+```{r feature_distribution_check}
+walk(setdiff(names(train_clean), "classe"), ~{
+    filename <- glue("figures/{.x}.png")
+    if (!file.exists(filename)) {
+        ggplot(train_clean, aes_string("classe", .x, fill = "classe")) +
+            geom_boxplot(alpha = .75)
+        ggsave(filename)
+    }
 })
 
-ggplot(train, aes(classe, magnet_dumbbell_y, fill = classe)) +
+ggplot(train_clean, aes(classe, magnet_dumbbell_y, fill = classe)) +
     geom_boxplot(alpha = .75)
 
-ggplot(train, aes(classe, gyros_dumbbell_x, fill = classe)) +
+ggplot(train_clean, aes(classe, gyros_dumbbell_x, fill = classe)) +
     geom_boxplot(alpha = .75)
 
-ggplot(train, aes(classe, gyros_forearm_x, fill = classe)) +
+ggplot(train_clean, aes(classe, gyros_forearm_x, fill = classe)) +
     geom_boxplot(alpha = .75)
 
 outliers <- train[magnet_dumbbell_y < -2000 | gyros_forearm_x < -20][, V1]
 outliers
-train <- train[!outliers]
+train_clean <- train_clean[magnet_dumbbell_y > -2000 | gyros_forearm_x > -20]
 ```
-
