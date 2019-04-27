@@ -10,8 +10,9 @@ output: html_document
 knitr::opts_chunk$set(
     echo = FALSE, 
     messages = FALSE,
+    warnings = FALSE,
     dpi = 300,
-    out.width = "350pt",
+    out.width = "600pt",
     fig.align = "center"
 )
 
@@ -22,6 +23,11 @@ test_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
 train <- fread(train_url)
 test  <- fread(test_url)
 ```
+
+
+&nbsp;
+&nbsp;
+
 
 
 ## Synopsis
@@ -76,20 +82,12 @@ walk(setdiff(names(train_clean), "classe"), ~{
 
 train_clean %>%
     .[, .(magnet_dumbbell_y, gyros_dumbbell_x, gyros_forearm_x, classe)] %>%
+    .[, lapply(.SD, as.double), classe] %>%
     melt(id.vars = "classe")  %>%
     ggplot(aes(classe, value, fill = classe)) +
         geom_boxplot(alpha = .75) +
         facet_wrap(~variable, nrow = 1, scales = "free_y") +
         labs(y = "")
-
-ggplot(train_clean, aes(classe, magnet_dumbbell_y, fill = classe)) +
-    
-
-ggplot(train_clean, aes(classe, gyros_dumbbell_x, fill = classe)) +
-    geom_boxplot(alpha = .75)
-
-ggplot(train_clean, aes(classe, gyros_forearm_x, fill = classe)) +
-    geom_boxplot(alpha = .75)
 
 outliers <- train[magnet_dumbbell_y < -2000 | gyros_forearm_x < -20][, V1]
 outliers
