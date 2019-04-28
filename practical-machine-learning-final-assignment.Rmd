@@ -109,18 +109,19 @@ As the training of the random forest model would have took too long, we only use
 We also set the `ntrees` parameter to 50, so the algorithm created only 50 bootstrap samples and trees using them.
 
 ```{r training, cache = TRUE}
-set.seed(20190428)
+train_clean[, classe := as.factor(classe)]
 
+set.seed(20190428)
 cl <- makePSOCKcluster(10)
 registerDoParallel(cl)
-
 cv_control <- trainControl(method = "repeatedcv", 10, 3, allowParallel = TRUE)
 
-train_clean_sample <- sample(1:nrow(train_clean), 5000)
+in_train_clean_sample <- sample(1:nrow(train_clean), 5000)
+train_clean_sample <- train_clean[in_train_clean_sample]
 
 rf_train <- train(
     form      = classe ~ .,
-    data      = train_clean[train_clean_sample],
+    data      = train_clean_sample,
     method    = "rf",
     ntree     = 50,
     trControl = cv_control
@@ -132,8 +133,49 @@ registerDoSEQ()
 rf_train
 ```
 
+&nbsp;
 
-```{r copy_html}
+Even with the 5000 subsample we see that we estimate the out-of-sample accuracy of the best model to be 97.2%.
+
+&nbsp;
+
+### In sample error
+```{r train_confusion}
+confusionMatrix(
+    rf_train$finalModel$predicted, 
+    train_clean_sample[, classe]
+)
+```
+
+&nbsp;
+&nbsp;
+
+If we predict `classe` for the 14,622 cases we left out during the training, we can see that the accuracy is still around 97%.
+
+### Out-of-sample error
+```{r oos_confusion}
+confusionMatrix(
+    predict(rf_train$finalModel, train_clean[-in_train_clean_sample]),
+    train_clean[-in_train_clean_sample, classe]
+)
+```
+
+&nbsp;
+&nbsp;
+
+## Predicing on test set
+```{r test_prediction}
+predict(
+    rf_train$finalModel, 
+    test[, .SD, .SDcols = setdiff(names(test), variables_to_omit)]
+)
+```
+
+&nbsp;
+&nbsp;
+
+
+```{r copy_html, include = FALSE}
 file.copy(
     "practical-machine-learning-final-assignment.html", 
     "index.html", 
