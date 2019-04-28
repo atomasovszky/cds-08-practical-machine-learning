@@ -1,3 +1,3 @@
-# cds-08-practical-machine-learning
+# Coursera Data Science 08. Practical Machine Learning
 
-[Report for Practical Machine Learning Final Assignment](https://atomasovszky.github.io/cds-08-practical-machine-learning/)
+[Report for Final Assignment](https://atomasovszky.github.io/cds-08-practical-machine-learning/)
