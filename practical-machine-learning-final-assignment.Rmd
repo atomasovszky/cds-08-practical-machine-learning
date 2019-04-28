@@ -147,8 +147,10 @@ confusionMatrix(
 )
 ```
 
+
 &nbsp;
 &nbsp;
+
 
 If we predict `classe` for the 14,622 cases we left out during the training, we can see that the accuracy is still around 97%.
 
@@ -160,8 +162,10 @@ confusionMatrix(
 )
 ```
 
+
 &nbsp;
 &nbsp;
+
 
 ## Predicing on test set
 ```{r test_prediction}
@@ -170,6 +174,7 @@ predict(
     test[, .SD, .SDcols = setdiff(names(test), variables_to_omit)]
 )
 ```
+
 
 &nbsp;
 &nbsp;
