@@ -177,6 +177,52 @@ train_clean %&gt;%
 outliers</code></pre>
 <pre><code>## [1] 5373 9274</code></pre>
 <pre class="r"><code>train_clean &lt;- train_clean[magnet_dumbbell_y &gt; -2000 | gyros_forearm_x &gt; -20]</code></pre>
+<p>   </p>
+</div>
+<div id="training-the-model-using-cross-validation" class="section level2">
+<h2>Training the model using cross validation</h2>
+<p>We chose to use random forest for the prediction task over CART and rpart as it corrects for the latter two methods’ tendency to overfitting and thus we expected to reach a better bias-variance tradeoff. In order to estimate the out-of-sample error (accuracy) we used repeated k-fold cross validation with 10 folds and 3 repetitions for each of them. We estimated the error by the average of the model’s accuracy on these 30 folds.</p>
+<p> </p>
+<p>As the training of the random forest model would have took too long, we only used 5000 randomly selected cases from the original training dataset. We also set the <code>ntrees</code> parameter to 50, so the algorithm created only 50 bootstrap samples and trees using them.</p>
+<pre class="r"><code>set.seed(20190428)
+
+cl &lt;- makePSOCKcluster(10)
+registerDoParallel(cl)
+
+cv_control &lt;- trainControl(method = &quot;repeatedcv&quot;, 10, 3, allowParallel = TRUE)
+
+train_clean_sample &lt;- sample(1:nrow(train_clean), 5000)
+
+rf_train &lt;- train(
+    form      = classe ~ .,
+    data      = train_clean[train_clean_sample],
+    method    = &quot;rf&quot;,
+    ntree     = 50,
+    trControl = cv_control
+)
+
+stopImplicitCluster()
+registerDoSEQ()
+
+rf_train</code></pre>
+<pre><code>## Random Forest 
+## 
+## 5000 samples
+##   52 predictor
+##    5 classes: 'A', 'B', 'C', 'D', 'E' 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold, repeated 3 times) 
+## Summary of sample sizes: 4500, 4500, 4500, 4499, 4500, 4498, ... 
+## Resampling results across tuning parameters:
+## 
+##   mtry  Accuracy   Kappa    
+##    2    0.9709394  0.9632156
+##   27    0.9722035  0.9648250
+##   52    0.9592743  0.9484616
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was mtry = 27.</code></pre>
 </div>
 
 

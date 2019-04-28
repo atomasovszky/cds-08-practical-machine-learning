@@ -91,3 +91,52 @@ outliers <- train[magnet_dumbbell_y < -2000 | gyros_forearm_x < -20][, V1]
 outliers
 train_clean <- train_clean[magnet_dumbbell_y > -2000 | gyros_forearm_x > -20]
 ```
+
+
+&nbsp;
+&nbsp;
+
+
+## Training the model using cross validation
+
+We chose to use random forest for the prediction task over CART and rpart as it corrects for the latter two methods' tendency to overfitting and thus we expected to reach a better bias-variance tradeoff.
+In order to estimate the out-of-sample error (accuracy) we used repeated k-fold cross validation with 10 folds and 3 repetitions for each of them.
+We estimated the error by the average of the model's accuracy on these 30 folds. 
+
+&nbsp;
+
+As the training of the random forest model would have took too long, we only used 5000 randomly selected cases from the original training dataset.
+We also set the `ntrees` parameter to 50, so the algorithm created only 50 bootstrap samples and trees using them.
+
+```{r training, cache = TRUE}
+set.seed(20190428)
+
+cl <- makePSOCKcluster(10)
+registerDoParallel(cl)
+
+cv_control <- trainControl(method = "repeatedcv", 10, 3, allowParallel = TRUE)
+
+train_clean_sample <- sample(1:nrow(train_clean), 5000)
+
+rf_train <- train(
+    form      = classe ~ .,
+    data      = train_clean[train_clean_sample],
+    method    = "rf",
+    ntree     = 50,
+    trControl = cv_control
+)
+
+stopImplicitCluster()
+registerDoSEQ()
+
+rf_train
+```
+
+
+```{r copy_html}
+file.copy(
+    "practical-machine-learning-final-assignment.html", 
+    "index.html", 
+    overwrite = TRUE
+)
+```
